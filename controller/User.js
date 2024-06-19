@@ -64,13 +64,6 @@ export const saveEventRequest = async (req, res) => {
     const { name, email, phone, company, designation, event } = req.body;
 
     try {
-        // Find the user by email
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
         // Create a new event request object
         const newEventRequest = {
             name,
@@ -81,14 +74,21 @@ export const saveEventRequest = async (req, res) => {
             event
         };
 
-        // Create a new Eventreq document with the user's _id and eventRequests array
-        const eventRequest = new Eventreq({
-            user: user._id,
-            eventRequests: [newEventRequest]
-        });
+        // Find or create the Eventreq document and push the new event request
+        let eventreq = await Eventreq.findOne({}); // Replace with your specific query
 
-        // Save the new Eventreq document
-        await eventRequest.save();
+        if (!eventreq) {
+            // If no Eventreq document exists, create a new one
+            eventreq = new Eventreq({
+                eventRequests: [newEventRequest]
+            });
+        } else {
+            // If Eventreq document exists, push the new event request
+            eventreq.eventRequests.push(newEventRequest);
+        }
+
+        // Save the Eventreq document (whether new or updated)
+        await eventreq.save();
 
         // Respond with success message and data
         res.status(200).json({
