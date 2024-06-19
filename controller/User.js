@@ -59,7 +59,7 @@ export const hostEvent = async (req, res) => {
 // Controller function to save event request data
 export const saveEventRequest = async (req, res) => {
     const { name, email, phone, company, designation, event } = req.body;
-console.log(name, email, phone, company, designation, event,"vvvvvvvvvvvvvvvv")
+
     try {
         // Create a new NaveEventreq document
         const newEventRequest = new Eventreq({

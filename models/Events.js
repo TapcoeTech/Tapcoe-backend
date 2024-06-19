@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { boolean } from 'webidl-conversions';
+
 
 const eventSchema = new mongoose.Schema({
     eventName: {
