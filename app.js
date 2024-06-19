@@ -35,7 +35,7 @@ app.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'http://localhost:4000/api/v1/auth/google/callback',
+      callbackURL: 'https://tapcoe-backend.onrender.com/api/v1/auth/google/callback',
       proxy: true,
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -104,7 +104,7 @@ app.get(
           // Generate JWT token
           const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET);
           // Redirect to frontend with token, email, and name
-          const redirectURL = `http://localhost:3000?token=${token}&email=${req.user.email}&name=${req.user.name}&profilePic=${req.user.profileImg}`;
+          const redirectURL = `https://tapcoe-2ish.vercel.app/?token=${token}&email=${req.user.email}&name=${req.user.name}&profilePic=${req.user.profileImg}`;
           res.redirect(redirectURL);
         } else {
           // User doesn't exist in session
