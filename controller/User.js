@@ -81,21 +81,14 @@ export const saveEventRequest = async (req, res) => {
             event
         };
 
-        // Find existing Eventreq documents for the user (if any)
-        let eventRequests = await Eventreq.find({ user: user._id });
+        // Create a new Eventreq document with the user's _id and eventRequests array
+        const eventRequest = new Eventreq({
+            user: user._id,
+            eventRequests: [newEventRequest]
+        });
 
-        if (!eventRequests || eventRequests.length === 0) {
-            // If no existing Eventreq documents, create a new one
-            const eventRequest = new Eventreq({ user: user._id, eventRequests: [newEventRequest] });
-            await eventRequest.save();
-            eventRequests = [eventRequest];
-        } else {
-            // Push the new event request object to each existing Eventreq document
-            await Promise.all(eventRequests.map(async (eventRequest) => {
-                eventRequest.eventRequests.push(newEventRequest);
-                await eventRequest.save();
-            }));
-        }
+        // Save the new Eventreq document
+        await eventRequest.save();
 
         // Respond with success message and data
         res.status(200).json({
