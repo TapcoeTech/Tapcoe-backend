@@ -6,4 +6,4 @@ import {  isAuthenticated } from "../middleware/auth.js";
 
 export const userRouter = express.Router();
 userRouter.route("/hostEvent").post(hostEvent);
-userRouter.route("/saveEventReq").post(isAuthenticated,saveEventRequest);
+userRouter.route("/saveEventReq").post(saveEventRequest);
