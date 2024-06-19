@@ -20,6 +20,7 @@ import User from "../models/User.js";
 
 
 
+
 // Controller function to host an event
 export const hostEvent = async (req, res) => {
   const { eventName, description, startDate, endDate, location, email } = req.body;
@@ -56,30 +57,39 @@ export const hostEvent = async (req, res) => {
 
 
 
-// Controller function to save event request data
+
+
 export const saveEventRequest = async (req, res) => {
     const { name, email, phone, company, designation, event } = req.body;
 
     try {
-        // Create a new NaveEventreq document
+        // Find the user by email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Create a new event request associated with the found user
         const newEventRequest = new Eventreq({
             name,
-            email,
             phone,
             company,
             designation,
-            event
+            event,
+            user: user._id // Associate with the user's ObjectId
         });
 
-        // Save the document to the database
+        // Save the event request to the database
         await newEventRequest.save();
 
         res.status(200).json({
             status: true,
-            message: "Request received successfully"
+            message: "Event request saved successfully",
+            data: newEventRequest
         });
-         // Respond with the saved document
     } catch (error) {
+        console.error('Error saving event request:', error);
         res.status(500).json({ message: 'Failed to save event request', error: error.message });
     }
 };

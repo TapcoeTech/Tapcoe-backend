@@ -5,11 +5,7 @@ const Eventrequest = new mongoose.Schema({
         type: String,
         required: true
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true // Assuming email should be unique
-    },
+  
     phone: {
         type: String
     },
@@ -23,6 +19,11 @@ const Eventrequest = new mongoose.Schema({
         type: String,
         required: true
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
  
 });
 
