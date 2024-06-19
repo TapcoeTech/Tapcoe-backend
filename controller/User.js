@@ -59,8 +59,7 @@ export const hostEvent = async (req, res) => {
 
 
 
-import User from '../model/User.js'; // Adjust path as per your project structure
-import Eventreq from '../model/Eventreq.js'; // Adjust path as per your project structure
+
 
 export const saveEventRequest = async (req, res) => {
     const { name, email, phone, company, designation, event } = req.body;
