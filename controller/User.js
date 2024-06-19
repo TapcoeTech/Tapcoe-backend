@@ -64,6 +64,11 @@ export const saveEventRequest = async (req, res) => {
     const { name, email, phone, company, designation, event } = req.body;
 
     try {
+        // Validate required fields (e.g., email)
+        if (!email || !name || !event) {
+            return res.status(400).json({ message: 'Name, Email, and Event are required' });
+        }
+
         // Create a new event request object
         const newEventRequest = {
             name,
@@ -75,20 +80,11 @@ export const saveEventRequest = async (req, res) => {
         };
 
         // Find or create the Eventreq document and push the new event request
-        let eventreq = await Eventreq.findOne({}); // Replace with your specific query
-
-        if (!eventreq) {
-            // If no Eventreq document exists, create a new one
-            eventreq = new Eventreq({
-                eventRequests: [newEventRequest]
-            });
-        } else {
-            // If Eventreq document exists, push the new event request
-            eventreq.eventRequests.push(newEventRequest);
-        }
-
-        // Save the Eventreq document (whether new or updated)
-        await eventreq.save();
+        const result = await Eventreq.findOneAndUpdate(
+            { email: email }, // Search by email
+            { $push: { eventRequests: newEventRequest } },
+            { upsert: true, new: true, runValidators: true }
+        );
 
         // Respond with success message and data
         res.status(200).json({
@@ -98,6 +94,12 @@ export const saveEventRequest = async (req, res) => {
         });
     } catch (error) {
         console.error('Error saving event request:', error);
+
+        // Handle duplicate key error (e.g., duplicate email)
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.email === 1) {
+            return res.status(400).json({ message: 'Email already exists' });
+        }
+
         res.status(500).json({ message: 'Failed to save event request', error: error.message });
     }
 };
