@@ -13,7 +13,8 @@
 //     }
 // }
 // Adjust the import path as per your project structure
-import Eventreq from "../models/Eventrequest.js";
+
+import { Eventreq } from "../models/Eventrequest.js";
 import Event from "../models/Events.js";
 import User from "../models/User.js";
 
@@ -59,8 +60,6 @@ export const hostEvent = async (req, res) => {
 
 
 
-
-
 export const saveEventRequest = async (req, res) => {
     const { name, email, phone, company, designation, event } = req.body;
 
@@ -72,19 +71,33 @@ export const saveEventRequest = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Create a new event request associated with the found user
-        const newEventRequest = new Eventreq({
+        // Create a new event request object
+        const newEventRequest = {
             name,
+            email,
             phone,
             company,
             designation,
-            event,
-            user: user._id // Associate with the user's ObjectId
-        });
+            event
+        };
 
-        // Save the event request to the database
-        await newEventRequest.save();
+        // Find existing Eventreq documents for the user (if any)
+        let eventRequests = await Eventreq.find({ user: user._id });
 
+        if (!eventRequests || eventRequests.length === 0) {
+            // If no existing Eventreq documents, create a new one
+            const eventRequest = new Eventreq({ user: user._id, eventRequests: [newEventRequest] });
+            await eventRequest.save();
+            eventRequests = [eventRequest];
+        } else {
+            // Push the new event request object to each existing Eventreq document
+            await Promise.all(eventRequests.map(async (eventRequest) => {
+                eventRequest.eventRequests.push(newEventRequest);
+                await eventRequest.save();
+            }));
+        }
+
+        // Respond with success message and data
         res.status(200).json({
             status: true,
             message: "Event request saved successfully",

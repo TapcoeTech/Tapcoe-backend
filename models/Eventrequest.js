@@ -1,32 +1,18 @@
 import mongoose from 'mongoose';
-
-const Eventrequest = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-  
-    phone: {
-        type: String
-    },
-    company: {
-        type: String
-    },
-    designation: {
-        type: String
-    },
-    event: {
-        type: String,
-        required: true
-    },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    }
- 
+const EventrequestSchema = new mongoose.Schema({
+    eventRequests: [
+        {
+            name: { type: String, required: true },
+            phone: { type: String },
+            company: { type: String },
+            designation: { type: String },
+            event: { type: String, required: true },
+            email:{
+                type:String
+            }
+            // user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // Reference to User model
+        }
+    ]
 });
 
-const Eventreq = mongoose.model('Eventreq', Eventrequest);
-
-export default Eventreq;
+export const Eventreq = mongoose.model('Eventreq', EventrequestSchema);
