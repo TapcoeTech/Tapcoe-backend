@@ -8,7 +8,8 @@ const EventrequestSchema = new mongoose.Schema({
             designation: { type: String },
             event: { type: String, required: true },
             email:{
-                type:String
+                type:String,
+                unique: false
             }
             // user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // Reference to User model
         }
