@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { boolean } from 'webidl-conversions';
 
 const eventSchema = new mongoose.Schema({
     eventName: {
@@ -33,7 +34,11 @@ const eventSchema = new mongoose.Schema({
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }]
+    }],
+    Approved:{
+        type:Boolean,
+        default:false
+    }
 });
 
 const Event = mongoose.model('Event', eventSchema);
