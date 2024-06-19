@@ -64,7 +64,7 @@ export const saveEventRequest = async (req, res) => {
     const { name, email, phone, company, designation, event } = req.body;
 
     try {
-        // Validate required fields (e.g., email)
+        // Validate required fields (example: email is required)
         if (!email || !name || !event) {
             return res.status(400).json({ message: 'Name, Email, and Event are required' });
         }
@@ -81,8 +81,8 @@ export const saveEventRequest = async (req, res) => {
 
         // Find or create the Eventreq document and push the new event request
         const result = await Eventreq.findOneAndUpdate(
-            { email: email }, // Search by email
-            { $push: { eventRequests: newEventRequest } },
+            { 'eventRequests.email': email }, // Search by email within eventRequests array
+            { $push: { 'eventRequests': newEventRequest } },
             { upsert: true, new: true, runValidators: true }
         );
 
