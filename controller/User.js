@@ -14,7 +14,7 @@
 // }
 // Adjust the import path as per your project structure
 
-import { Eventreq } from "../models/Eventrequest.js";
+
 import Event from "../models/Events.js";
 import User from "../models/User.js";
 
@@ -24,7 +24,7 @@ import User from "../models/User.js";
 
 // Controller function to host an event
 export const hostEvent = async (req, res) => {
-  const { eventName, description, startDate, endDate, location, email } = req.body;
+  const { description,eventType,designation,name,phone, email  } = req.body;
 
   try {
     // Find the user by email in the database
@@ -36,11 +36,12 @@ export const hostEvent = async (req, res) => {
 
     // Create the event with hostUser as the host
     const newEvent = new Event({
-      eventName,
+        eventType,
+      designation,
+      name,
+      phone,
+      
       description,
-      startDate,
-      endDate,
-      location,
       host: hostUser._id, // Assign host as ObjectId of hostUser
       participants: [], // Initialize with empty participants array
       likes: [] // Initialize with empty likes array
@@ -60,49 +61,49 @@ export const hostEvent = async (req, res) => {
 
 
 
-export const saveEventRequest = async (req, res) => {
-    const { name, email, phone, company, designation, event } = req.body;
+// export const saveEventRequest = async (req, res) => {
+//     const { name, email, phone, company, designation, event } = req.body;
 
-    try {
-        // Validate required fields (example: email is required)
-        if (!email || !name || !event) {
-            return res.status(400).json({ message: 'Name, Email, and Event are required' });
-        }
+//     try {
+//         // Validate required fields (example: email is required)
+//         if (!email || !name || !event) {
+//             return res.status(400).json({ message: 'Name, Email, and Event are required' });
+//         }
 
-        // Create a new event request object
-        const newEventRequest = {
-            name,
-            email,
-            phone,
-            company,
-            designation,
-            event
-        };
+//         // Create a new event request object
+//         const newEventRequest = {
+//             name,
+//             email,
+//             phone,
+//             company,
+//             designation,
+//             event
+//         };
 
-        // Directly push the new event request into Eventreq collection
-        const result = await Eventreq.updateOne(
-            {}, // Update all documents (you can specify a specific filter if needed)
-            { $push: { 'eventRequests': newEventRequest } },
-            { upsert: true, runValidators: true }
-        );
+//         // Directly push the new event request into Eventreq collection
+//         const result = await Eventreq.updateOne(
+//             {}, // Update all documents (you can specify a specific filter if needed)
+//             { $push: { 'eventRequests': newEventRequest } },
+//             { upsert: true, runValidators: true }
+//         );
 
-        // Check result and handle success/failure
-        if (result.ok) {
-            // Respond with success message and data
-            res.status(200).json({
-                status: true,
-                message: "Event request saved successfully",
-                data: newEventRequest
-            });
-        } else {
-            throw new Error('Failed to save event request');
-        }
-    } catch (error) {
-        console.error('Error saving event request:', error);
+//         // Check result and handle success/failure
+//         if (result.ok) {
+//             // Respond with success message and data
+//             res.status(200).json({
+//                 status: true,
+//                 message: "Event request saved successfully",
+//                 data: newEventRequest
+//             });
+//         } else {
+//             throw new Error('Failed to save event request');
+//         }
+//     } catch (error) {
+//         console.error('Error saving event request:', error);
 
-        // Handle any specific errors
-        res.status(500).json({ message: 'Failed to save event request', error: error.message });
-    }
-};
+//         // Handle any specific errors
+//         res.status(500).json({ message: 'Failed to save event request', error: error.message });
+//     }
+// };
 
 

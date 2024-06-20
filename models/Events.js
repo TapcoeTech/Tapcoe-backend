@@ -4,23 +4,29 @@ import mongoose from 'mongoose';
 const eventSchema = new mongoose.Schema({
     eventName: {
         type: String,
-        required: true
+       
     },
     description: {
         type: String,
-        required: true
+     
     },
     startDate: {
         type: Date,
-        required: true
+       
     },
     endDate: {
         type: Date,
-        required: true
+       
     },
+    name: { type: String, required: true },
+    phone: { type: String,required: true },
+   
+    designation: { type: String,required: true },
+    eventType:{type:String,require:true},
+   
     location: {
         type: String,
-        required: true
+        
     },
     host: {
         type: mongoose.Schema.Types.ObjectId,
