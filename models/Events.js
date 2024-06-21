@@ -18,6 +18,7 @@ const eventSchema = new mongoose.Schema({
         type: Date,
        
     },
+    eventImage:{type:String,required:true},
     name: { type: String, required: true },
     phone: { type: String,required: true },
    
@@ -33,18 +34,21 @@ const eventSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    participants: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
-    likes: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
     Approved:{
         type:Boolean,
         default:false
-    }
+    },
+    participants: [{
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        imageUrl: { type: String },
+        likes: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+    ], // Adding image URL for each participant
+    }],
+
+  
 });
 
 const Event = mongoose.model('Event', eventSchema);

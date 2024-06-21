@@ -44,7 +44,7 @@ export const hostEvent = async (req, res) => {
       description,
       host: hostUser._id, // Assign host as ObjectId of hostUser
       participants: [], // Initialize with empty participants array
-      likes: [] // Initialize with empty likes array
+      // Initialize with empty likes array
     });
 
     // Save the event to the database
@@ -56,54 +56,111 @@ export const hostEvent = async (req, res) => {
   }
 };
 
+export const liveEvent = async (req, res) => {
+    const { eventName, startDate, endDate, email, event_id, eventImage } = req.body;
+
+    try {
+        // Find the user by email
+        const hostUser = await User.findOne({ email });
+
+        if (!hostUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Find the event by ID and verify that the host user matches
+        const event = await Event.findOne({ _id: event_id, host: hostUser._id });
+
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found or user is not the host' });
+        }
+
+        // Update the event details
+        if (eventName) event.eventName = eventName;
+        if (startDate) event.startDate = startDate;
+        if (endDate) event.endDate = endDate;
+        if (eventImage) event.eventImage = eventImage;
+
+        // Save the updated event
+        const updatedEvent = await event.save();
+
+        res.status(200).json({ message: 'Event updated successfully', event: updatedEvent });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Event update failed', error: error.message });
+    }
+};
 
 
+export const addParticipantWithImageUrl = async (req, res) => {
+    const { eventName, email, profileImgUrl } = req.body;
 
+    try {
+        // Find the event by name
+        const event = await Event.findOne({ eventName });
 
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
 
-// export const saveEventRequest = async (req, res) => {
-//     const { name, email, phone, company, designation, event } = req.body;
+        // Find the user by email
+        let user = await User.findOne({ email });
 
-//     try {
-//         // Validate required fields (example: email is required)
-//         if (!email || !name || !event) {
-//             return res.status(400).json({ message: 'Name, Email, and Event are required' });
-//         }
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
-//         // Create a new event request object
-//         const newEventRequest = {
-//             name,
-//             email,
-//             phone,
-//             company,
-//             designation,
-//             event
-//         };
+        // Check if the user is already a participant
+        const isAlreadyParticipant = event.participants.some(participant => participant.user.equals(user._id));
+        if (isAlreadyParticipant) {
+            return res.status(400).json({ message: 'User is already a participant' });
+        }
 
-//         // Directly push the new event request into Eventreq collection
-//         const result = await Eventreq.updateOne(
-//             {}, // Update all documents (you can specify a specific filter if needed)
-//             { $push: { 'eventRequests': newEventRequest } },
-//             { upsert: true, runValidators: true }
-//         );
+        // Add user to participants with image URL
+        event.participants.push({ user: user._id, imageUrl: profileImgUrl });
 
-//         // Check result and handle success/failure
-//         if (result.ok) {
-//             // Respond with success message and data
-//             res.status(200).json({
-//                 status: true,
-//                 message: "Event request saved successfully",
-//                 data: newEventRequest
-//             });
-//         } else {
-//             throw new Error('Failed to save event request');
-//         }
-//     } catch (error) {
-//         console.error('Error saving event request:', error);
+        // Save the updated event
+        await event.save();
 
-//         // Handle any specific errors
-//         res.status(500).json({ message: 'Failed to save event request', error: error.message });
-//     }
-// };
+        res.status(200).json({ message: 'Participant added successfully', event });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+export const likeEvent = async (req, res) => {
+    const { likerEmail, event_id, participant_id } = req.body;
+
+    try {
+        // Find the user who is liking the event
+        const likerUser = await User.findOne({ email: likerEmail });
+        
+        if (!likerUser) {
+            return res.status(404).json({ message: 'Liker user not found' });
+        }
+
+        // Find the event by event_id
+        const event = await Event.findById(event_id);
+
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        // Add the participant_id to the likes array if not already liked
+        if (!event.likes.includes(participant_id)) {
+            event.likes.push(participant_id);
+        } else {
+            return res.status(400).json({ message: 'User already liked this event' });
+        }
+
+        // Save the updated event
+        await event.save();
+
+        res.status(200).json({ message: 'Event liked successfully', event });
+    } catch (error) {
+        console.error('Error liking event:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 
 
