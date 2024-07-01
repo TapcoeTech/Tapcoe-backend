@@ -92,7 +92,7 @@ export const liveEvent = async (req, res) => {
 
 
 export const addParticipantWithImageUrl = async (req, res) => {
-    const { eventName, email, profileImgUrl } = req.body;
+    const { eventName, email, profileImgUrl,uuid } = req.body;
 
     try {
         // Find the event by name
@@ -116,7 +116,10 @@ export const addParticipantWithImageUrl = async (req, res) => {
         }
 
         // Add user to participants with image URL
-        event.participants.push({ user: user._id, imageUrl: profileImgUrl });
+        event.participants.push({ user: user._id, image: {
+            imageUrl:profileImgUrl,
+            uuid:uuid
+        } });
 
         // Save the updated event
         await event.save();
@@ -127,6 +130,42 @@ export const addParticipantWithImageUrl = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+// export const likeEvent = async (req, res) => {
+//     const { likerEmail, event_id, participant_id } = req.body;
+
+//     try {
+//         // Find the user who is liking the event
+//         const likerUser = await User.findOne({ email: likerEmail });
+        
+//         if (!likerUser) {
+//             return res.status(404).json({ message: 'Liker user not found' });
+//         }
+
+//         // Find the event by event_id
+//         const event = await Event.findById(event_id);
+
+//         if (!event) {
+//             return res.status(404).json({ message: 'Event not found' });
+//         }
+
+//         // Add the participant_id to the likes array if not already liked
+//         if (!event.likes.includes(participant_id)) {
+//             event.likes.push(participant_id);
+//         } else {
+//             return res.status(400).json({ message: 'User already liked this event' });
+//         }
+
+//         // Save the updated event
+//         await event.save();
+
+//         res.status(200).json({ message: 'Event liked successfully', event });
+//     } catch (error) {
+//         console.error('Error liking event:', error);
+//         res.status(500).json({ message: 'Server error', error: error.message });
+//     }
+// };
+
 
 export const likeEvent = async (req, res) => {
     const { likerEmail, event_id, participant_id } = req.body;
@@ -146,21 +185,32 @@ export const likeEvent = async (req, res) => {
             return res.status(404).json({ message: 'Event not found' });
         }
 
-        // Add the participant_id to the likes array if not already liked
-        if (!event.likes.includes(participant_id)) {
-            event.likes.push(participant_id);
+        // Find the participant within the event's participants array
+        const participant = event.participants.find(participant => participant._id.equals(participant_id));
+
+        if (!participant) {
+            return res.status(404).json({ message: 'Participant not found in event' });
+        }
+
+        // Ensure participant.likes is an array before using includes
+        if (!Array.isArray(participant.likes)) {
+            participant.likes = []; // Initialize likes array if it's not defined
+        }
+
+        // Check if the likerUser's ID is already in the likes array of the participant
+        if (!participant.likes.includes(likerUser._id)) {
+            participant.likes.push(likerUser._id);
         } else {
-            return res.status(400).json({ message: 'User already liked this event' });
+            return res.status(400).json({ message: 'User already liked this participant' });
         }
 
         // Save the updated event
         await event.save();
 
-        res.status(200).json({ message: 'Event liked successfully', event });
+        res.status(200).json({ message: 'Participant liked successfully', event });
     } catch (error) {
-        console.error('Error liking event:', error);
+        console.error('Error liking participant:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
-
 

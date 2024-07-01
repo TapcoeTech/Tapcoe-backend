@@ -40,7 +40,14 @@ const eventSchema = new mongoose.Schema({
     },
     participants: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        imageUrl: { type: String },
+        image: { 
+            imageUrl: {
+                type:String
+            } ,
+            uuid:{
+                type:String
+            }
+        },
         likes: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
