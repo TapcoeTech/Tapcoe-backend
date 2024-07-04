@@ -245,21 +245,26 @@ export const getAllEventNames = async (req, res) => {
 };
 
 
+// controllers/eventController.js
 export const getAllParticipants = async (req, res) => {
     try {
-        // Fetch all events
-        const events = await Event.find({}, 'participants').populate('participants.user', 'name email');
+        // Fetch all events with the required fields
+        const events = await Event.find({}, 'eventImage startDate participants').populate('participants.user', 'name email');
 
-        // Extract participants from each event
+        // Extract participants from each event along with the event details
         const participants = events.reduce((acc, event) => {
             event.participants.forEach(participant => {
                 acc.push({
                     eventId: event._id,
+                    eventImage: event.eventImage,
+                    eventName:event.eventName,
+                    
+                    startDate: event.startDate,
                     userId: participant.user._id,
                     userName: participant.user.name,
                     userEmail: participant.user.email,
-                    imageUrl: participant.image.imageUrl,
-                    likes:participant.likes
+                    imageUrl: participant.imageUrl,
+                    likes: participant.likes,
                 });
             });
             return acc;
@@ -267,6 +272,25 @@ export const getAllParticipants = async (req, res) => {
 
         res.status(200).json(participants);
     } catch (error) {
+        console.error('Error fetching participants:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+export const getEventById = async (req, res) => {
+    const { eventId } = req.body;
+
+    try {
+        // Find the event by _id
+        const event = await Event.findById(eventId).populate('host', 'name email');
+
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        res.status(200).json(event);
+    } catch (error) {
+        console.error('Error fetching event:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

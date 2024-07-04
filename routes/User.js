@@ -1,5 +1,5 @@
 import express from "express";
-import { addParticipantWithImageUrl, getAllEventNames, getAllEvents, getAllParticipants, hostEvent, likeEvent, liveEvent } from "../controller/User.js";
+import { addParticipantWithImageUrl, getAllEventNames, getAllEvents, getAllParticipants, getEventById, hostEvent, likeEvent, liveEvent } from "../controller/User.js";
 import {  isAuthenticated } from "../middleware/auth.js";
 
 
@@ -78,3 +78,4 @@ userRouter.route("/likeEvent").post(likeEvent)
 userRouter.route('/getallEvent').get(getAllEvents)
 userRouter.route('/getEventName').get(getAllEventNames)
 userRouter.route('/getAllParticipants').get(getAllParticipants)
+userRouter.route('/getEventById').get(getEventById)
