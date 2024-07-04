@@ -243,3 +243,30 @@ export const getAllEventNames = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+
+export const getAllParticipants = async (req, res) => {
+    try {
+        // Fetch all events
+        const events = await Event.find({}, 'participants').populate('participants.user', 'name email');
+
+        // Extract participants from each event
+        const participants = events.reduce((acc, event) => {
+            event.participants.forEach(participant => {
+                acc.push({
+                    eventId: event._id,
+                    userId: participant.user._id,
+                    userName: participant.user.name,
+                    userEmail: participant.user.email,
+                    imageUrl: participant.image.imageUrl,
+                    likes:participant.likes
+                });
+            });
+            return acc;
+        }, []);
+
+        res.status(200).json(participants);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
