@@ -228,3 +228,18 @@ export const getAllEvents = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+
+
+export const getAllEventNames = async (req, res) => {
+    try {
+        // Fetch only the eventName field from all events
+        const eventNames = await Event.find({}, 'eventName');
+        
+        // Respond with the list of event names
+        res.status(200).json(eventNames);
+    } catch (error) {
+        console.error('Error fetching event names:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
