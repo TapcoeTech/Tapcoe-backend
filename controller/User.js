@@ -214,3 +214,17 @@ export const likeEvent = async (req, res) => {
     }
 };
 
+export const getAllEvents = async (req, res) => {
+    try {
+        // Fetch all events and populate host and participants details
+        const events = await Event.find()
+            .populate('host', 'name email') // Populate host details
+            .populate('participants.user', 'name email'); // Populate participants details
+
+        // Respond with the list of events
+        res.status(200).json(events);
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

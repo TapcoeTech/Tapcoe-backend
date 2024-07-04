@@ -18,7 +18,7 @@ const eventSchema = new mongoose.Schema({
         type: Date,
        
     },
-    eventImage:{type:String,required:true},
+    eventImage:{type:String},
     name: { type: String, required: true },
     phone: { type: String,required: true },
    
