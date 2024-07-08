@@ -279,7 +279,7 @@ export const getAllParticipants = async (req, res) => {
 
 export const getEventById = async (req, res) => {
     const { eventId } = req.body;
-
+console.log(eventId,"eventId");
     try {
         // Find the event by _id
         const event = await Event.findById(eventId).populate('host', 'name email');
@@ -287,7 +287,7 @@ export const getEventById = async (req, res) => {
         if (!event) {
             return res.status(404).json({ message: 'Event not found' });
         }
-
+        console.log(event,"event");
         res.status(200).json(event);
     } catch (error) {
         console.error('Error fetching event:', error);
