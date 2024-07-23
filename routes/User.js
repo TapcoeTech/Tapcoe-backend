@@ -78,7 +78,7 @@ userRouter.route("/likeEvent").post(likeEvent)
 userRouter.route('/getallEvent').get(getAllEvents)
 userRouter.route('/getEventName').get(getAllEventNames)
 userRouter.route('/getAllParticipants').get(getAllParticipants);
-userRouter.route('/getParticipantsById').get(async (req, res) => {
+userRouter.route('/getParticipantsById').post(async (req, res) => {
   const { email, eventId, participantId } = req.body;
 
   try {
