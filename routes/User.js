@@ -77,5 +77,40 @@ userRouter.route("/liveEvent").post(liveEvent);
 userRouter.route("/likeEvent").post(likeEvent)
 userRouter.route('/getallEvent').get(getAllEvents)
 userRouter.route('/getEventName').get(getAllEventNames)
-userRouter.route('/getAllParticipants').get(getAllParticipants)
+userRouter.route('/getAllParticipants').get(getAllParticipants);
+userRouter.route('/getParticipantsById').get(async (req, res) => {
+  const { email, eventId, participantId } = req.body;
+
+  try {
+      // Find the event by eventId
+      const event = await Event.findById(eventId).populate('participants.user');
+
+      if (!event) {
+          return res.status(404).json({ error: 'Event not found' });
+      }
+
+      // Find the participant in the event
+      const participant = event.participants.id(participantId);
+      if (!participant) {
+          return res.status(404).json({ error: 'Participant not found' });
+      }
+
+      // Find the user by email
+      const user = await User.findOne({ email: email });
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Verify that the participant user matches the user found by email
+      if (String(participant.user._id) !== String(user._id)) {
+          return res.status(404).json({ error: 'Participant does not match the user' });
+      }
+
+      // Respond with the participant details
+      res.json(participant);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while fetching the participant' });
+  }
+});
 userRouter.route('/getEventById').post(getEventById)
