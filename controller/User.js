@@ -299,7 +299,7 @@ export const getParticipantsById=async (req, res) => {
     const { eventId, participantId } = req.body;
 
     try {
-        // Find the event by eventId and populate the participants' user details
+        // Find the event by eventId
         const event = await Event.findById(eventId).populate('participants.user');
 
         if (!event) {
