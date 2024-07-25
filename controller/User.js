@@ -336,3 +336,31 @@ export const getParticipantsById=async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching the participant' });
     }
 };
+
+export const getSortedParticipants = async (req, res) => {
+    const { eventId } = req.body;
+
+    try {
+        // Find the event by event_id
+        const event = await Event.findById(eventId);
+
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        // Ensure participants are available
+        if (!event.participants || event.participants.length === 0) {
+            return res.status(404).json({ message: 'No participants found' });
+        }
+
+        // Sort participants by rank in ascending order
+        const sortedParticipants = event.participants
+            .filter(participant => participant.rank !== undefined)
+            .sort((a, b) => parseInt(a.rank) - parseInt(b.rank));
+
+        res.status(200).json({ participants: sortedParticipants });
+    } catch (error) {
+        console.error('Error fetching sorted participants:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
