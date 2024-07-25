@@ -299,7 +299,7 @@ export const getParticipantsById=async (req, res) => {
     const { eventId, participantId } = req.body;
 
     try {
-        // Find the event by eventId
+        // Find the event by eventId and populate the participants' user details
         const event = await Event.findById(eventId).populate('participants.user');
 
         if (!event) {
@@ -318,9 +318,14 @@ export const getParticipantsById=async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Respond with the participant details along with the user details
+        // Get the length of the likes array
+        const likesLength = participant.likes.length;
+
+        // Respond with the participant details along with the user details and likes length
         res.json({
-            participant
+            participant,
+            user,
+            likesLength
         });
     } catch (error) {
         console.error(error);
