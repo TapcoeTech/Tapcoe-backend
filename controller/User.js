@@ -173,7 +173,7 @@ export const likeEvent = async (req, res) => {
     try {
         // Find the user who is liking the event
         const likerUser = await User.findOne({ email: likerEmail });
-        
+
         if (!likerUser) {
             return res.status(404).json({ message: 'Liker user not found' });
         }
@@ -186,7 +186,7 @@ export const likeEvent = async (req, res) => {
         }
 
         // Find the participant within the event's participants array
-        const participant = event.participants.find(participant => participant._id.equals(participant_id));
+        const participant = event.participants.id(participant_id);
 
         if (!participant) {
             return res.status(404).json({ message: 'Participant not found in event' });
@@ -204,6 +204,11 @@ export const likeEvent = async (req, res) => {
             return res.status(400).json({ message: 'User already liked this participant' });
         }
 
+        // Update the rank field for all participants
+        event.participants.forEach(participant => {
+            participant.rank = participant.likes.length.toString();
+        });
+
         // Save the updated event
         await event.save();
 
@@ -213,7 +218,6 @@ export const likeEvent = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
-
 export const getAllEvents = async (req, res) => {
     try {
         // Fetch all events and populate host and participants details

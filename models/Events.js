@@ -48,6 +48,9 @@ const eventSchema = new mongoose.Schema({
                 type:String
             }
         },
+        rank:{
+            type:String
+        },
         likes: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
