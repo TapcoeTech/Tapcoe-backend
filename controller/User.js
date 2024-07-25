@@ -320,8 +320,7 @@ export const getParticipantsById=async (req, res) => {
 
         // Respond with the participant details along with the user details
         res.json({
-            participant,
-            user
+            participant
         });
     } catch (error) {
         console.error(error);
