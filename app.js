@@ -104,7 +104,7 @@ app.get(
           // Generate JWT token
           const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET);
           // Redirect to frontend with token, email, and name
-          const redirectURL = `https://tapcoe-2ish.vercel.app/?token=${token}&email=${req.user.email}&name=${req.user.name}&profilePic=${req.user.profileImg}`;
+          const redirectURL = `https://tapcoe-2ish.vercel.app/?token=${token}&email=${req.user.email}&name=${req.user.name}&profilePic=${req.user.profileImg}&_id=${req.user._id}`;
           res.redirect(redirectURL);
         } else {
           // User doesn't exist in session
