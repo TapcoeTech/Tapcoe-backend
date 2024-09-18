@@ -80,4 +80,4 @@ userRouter.route('/getEventName').get(getAllEventNames)
 userRouter.route('/getAllParticipants').get(getAllParticipants);
 userRouter.route('/getParticipantsById').post(getParticipantsById);
 userRouter.route('/getEventById').post(getEventById)
-userRouter.route('/getLeaderBoard').post(getSortedParticipants)
+userRouter.route('/getLeaderBoard').post(getSortedParticipants)  
