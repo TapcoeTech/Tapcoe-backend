@@ -273,6 +273,62 @@ export const likeEvent = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+export const dislikeEvent = async (req, res) => {
+    const { likerEmail, event_id, participant_id } = req.body;
+
+    try {
+        // Find the user who is disliking the event
+        const likerUser = await User.findOne({ email: likerEmail });
+
+        if (!likerUser) {
+            return res.status(404).json({ message: 'Disliker user not found' });
+        }
+
+        // Find the event by event_id
+        const event = await Event.findById(event_id);
+
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        // Find the participant within the event's participants array
+        const participant = event.participants.id(participant_id);
+
+        if (!participant) {
+            return res.status(404).json({ message: 'Participant not found in event' });
+        }
+
+        // Ensure participant.likes is an array before using includes
+        if (!Array.isArray(participant.likes)) {
+            participant.likes = []; // Initialize likes array if it's not defined
+        }
+
+        // Check if the likerUser's ID is in the likes array of the participant
+        if (participant.likes.includes(likerUser._id)) {
+            // Remove the likerUser's ID from the likes array
+            participant.likes = participant.likes.filter(id => !id.equals(likerUser._id));
+        } else {
+            return res.status(400).json({ message: 'User has not liked this participant yet' });
+        }
+
+        // Sort participants by the number of likes in descending order
+        event.participants.sort((a, b) => b.likes.length - a.likes.length);
+
+        // Update the rank field for all participants based on their position in the sorted array
+        event.participants.forEach((participant, index) => {
+            participant.rank = (index + 1).toString();
+        });
+
+        // Save the updated event
+        await event.save();
+
+        res.status(200).json({ message: 'Participant disliked successfully', event });
+    } catch (error) {
+        console.error('Error disliking participant:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 
 export const getAllEvents = async (req, res) => {
     try {

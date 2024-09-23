@@ -1,5 +1,5 @@
 import express from "express";
-import { addParticipantWithImageUrl, getAllEventNames, getAllEvents, getAllParticipants, getEventById, getParticipantsById, getSortedParticipants, hostEvent, likeEvent, liveEvent } from "../controller/User.js";
+import { addParticipantWithImageUrl, dislikeEvent, getAllEventNames, getAllEvents, getAllParticipants, getEventById, getParticipantsById, getSortedParticipants, hostEvent, likeEvent, liveEvent } from "../controller/User.js";
 import {  isAuthenticated } from "../middleware/auth.js";
 
 
@@ -75,6 +75,7 @@ userRouter.route("/hostEvent").post(isAuthenticated,hostEvent);
 userRouter.route("/addParticipant").post(addParticipantWithImageUrl);
 userRouter.route("/liveEvent").post(liveEvent);
 userRouter.route("/likeEvent").post(isAuthenticated,likeEvent)
+userRouter.route("/unLikeEvent").post(isAuthenticated,dislikeEvent);
 userRouter.route('/getallEvent').get(getAllEvents)
 userRouter.route('/getEventName').get(getAllEventNames)
 userRouter.route('/getAllParticipants').get(getAllParticipants);
