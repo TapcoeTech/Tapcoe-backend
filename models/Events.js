@@ -56,6 +56,7 @@ const eventSchema = new mongoose.Schema({
             ref: 'User'
         },
     ], // Adding image URL for each participant
+    createdAt: { type: Date, default: Date.now } 
     }],
 
   
