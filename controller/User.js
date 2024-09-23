@@ -411,7 +411,7 @@ console.log(eventId,"eventId");
     }
 };
 
-export const getParticipantsById=async (req, res) => {
+export const getParticipantsById = async (req, res) => {
     const { eventId, participantId } = req.body;
 
     try {
@@ -437,8 +437,12 @@ export const getParticipantsById=async (req, res) => {
         // Get the length of the likes array
         const likesLength = participant.likes.length;
 
-        // Respond with the participant details along with the user details and likes length
+        // Respond with the participant details along with user details, likes length, and event details
         res.json({
+            eventName: event.eventName,
+            eventImage: event.eventImage,
+            description: event.description,
+            endDate: event.endDate,
             participant,
             user,
             likesLength
@@ -448,6 +452,7 @@ export const getParticipantsById=async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching the participant' });
     }
 };
+
 
 export const getSortedParticipants = async (req, res) => {
     const { eventId } = req.body;
